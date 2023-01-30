@@ -40,6 +40,7 @@ module.exports = function HotReloadMiddleware(broker) {
 		});
 	}
 
+
 	/**
 	 * Detect service dependency graph & watch all dependent files & services.
 	 *
@@ -227,6 +228,18 @@ module.exports = function HotReloadMiddleware(broker) {
 	function processModule(mod, service = null, level = 0, parents = null) {
 		const fName = mod.filename;
 
+		// Skip excluded files
+
+		let excluded = false;
+
+		broker.options.hotReloadExclusions.forEach(exclusion => {
+			if (fName.indexOf(exclusion) !== -1) {
+				excluded = true;
+			}
+		});
+
+		if (excluded) return;
+
 		// Skip node_modules files, if there is parent project file
 		if ((service || parents) && fName.indexOf("node_modules") !== -1)
 			if (hotReloadModules.find(modulePath => fName.indexOf(modulePath) !== -1) == null)
@@ -236,7 +249,7 @@ module.exports = function HotReloadMiddleware(broker) {
 		if (parents && parents.indexOf(fName) !== -1) return;
 
 		// console.log(fName);
-
+		
 		// Cache files to avoid cyclic dependencies in node_modules
 		if (fName.indexOf("node_modules") !== -1) {
 			if (cache.get(fName)) return;

@@ -116,6 +116,8 @@ const defaultOptions = {
 
 	hotReload: false,
 
+	hotReloadExclusions: [],
+
 	middlewares: null,
 
 	replCommands: null,
